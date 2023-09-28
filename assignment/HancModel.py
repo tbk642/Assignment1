@@ -18,15 +18,15 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','w'] # direct inputs
+        self.inputs_hh = ['r','w_low','w_high','phi_low','phi_high'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
         self.outputs_hh = ['a','c','l'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
-        # c. GE
-        self.shocks = ['Gamma'] # exogenous shocks
+        # c. GE, used to run the DAG
+        self.shocks = ['Gamma','phi_low','phi_high'] # exogenous shocks, values we can make shocks to
         self.unknowns = ['K','L_low','L_high'] # endogenous unknowns
-        self.targets = ['clearing_A','clearing_L_low','clearing_L_high'] # targets = 0
+        self.targets = ['clearing_A','clearing_L_low','clearing_L_high'] # targets = 0, equations solved numericcaly 
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
             'blocks.mutual_fund',
@@ -41,7 +41,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         par = self.par
 
-        par.Nfix = 3 # number of fixed discrete states (here discount factor)
+        par.Nfix = 6 # number of fixed discrete states (here discount factor and labour productivity)
         par.Nz = 7 # number of stochastic discrete states (here productivity)
 
         # a. preferences
@@ -95,8 +95,14 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par = self.par
 
         # a. grids
+
+        # i. beta grid
         par.Nbeta = par.Nfix
         par.beta_grid = np.zeros(par.Nbeta)
+
+        # ii. eta grid
+        par.Neta = par.Nfix
+        par.eta_grid = np.zeros(par.Neta)
         
         # b. solution
         self.allocate_GE() # should always be called here
