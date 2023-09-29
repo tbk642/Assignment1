@@ -102,7 +102,8 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # ii. eta grid
         par.Neta = par.Nfix
-        par.eta_grid = np.zeros(par.Neta)
+        par.eta_low_grid = np.zeros(par.Neta)
+        par.eta_high_grid = np.zeros(par.Neta)
         
         # b. solution
         self.allocate_GE() # should always be called here

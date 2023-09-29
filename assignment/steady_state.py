@@ -18,17 +18,17 @@ def prepare_hh_ss(model):
     ############
     
     # a. beta
-    par.beta_grid[:] = np.linspace(par.beta_mean-par.beta_delta,par.beta_mean+par.beta_delta,par.Nbeta)
+    par.beta_grid[:] = np.linspace(par.beta_mean-par.beta_sigma,par.beta_mean+par.beta_sigma,par.Nbeta)
 
     # b. a
-    par.a_grid[:] = equilogspace(0.0,ss.w*par.a_max,par.Na)
+    par.a_grid[:] = equilogspace(0.0,par.a_max,par.Na)
     
     # c. z
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
     # d. eta
-    par.eta_low_grid[:] # np array? 
-    par.eta_high_grid[:]
+    par.eta_low_grid[:] = np.linspace(par.beta_mean-par.beta_sigma,par.beta_mean+par.beta_sigma,par.Nbeta)# np array? UPDATE THIS LINE - THIS IS JUST FOR TESTING
+    par.eta_high_grid[:] = np.linspace(par.beta_mean-par.beta_sigma,par.beta_mean+par.beta_sigma,par.Nbeta) # AND THIS LINE
 
     #############################################
     # 2. transition matrix initial distribution #
@@ -44,9 +44,9 @@ def prepare_hh_ss(model):
     ################################################
 
     # a. raw value
-    y = ss.w*par.z_grid
+    y = ss.w_high*ss.w_low*par.z_grid
     c = m = (1+ss.r)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
-    v_a = (1+ss.r)*c**(-par.sigma)
+    v_a = (1+ss.r-par.delta)*c**(-par.sigma)
 
     # b. expectation
     ss.vbeg_a[:] = ss.z_trans@v_a
@@ -60,20 +60,22 @@ def obj_ss(K_ss,model,do_print=False):
     # a. production
     ss.Gamma = par.Gamma_ss # model user choice
     ss.A = ss.K = K_ss
-    ss.L = 1.0 # by assumption
-    ss.Y = ss.Gamma*ss.K**par.alpha*ss.L**(1-par.alpha)    
+    ss.Y = ss.Gamma*ss.K**par.alpha*ss.L_low**((1-par.alpha)/2)*ss.L_high**((1-par.alpha)/2)    
 
     # b. implied prices
-    ss.rK = par.alpha*ss.Gamma*(ss.K/ss.L)**(par.alpha-1.0)
+    ss.rK = par.alpha*ss.Gamma*ss.K**(par.alpha-1.0)*ss.L_low**((1-par.alpha)/2)*ss.L_high**((1-par.alpha)/2)
     ss.r = ss.rK - par.delta
-    ss.w = (1.0-par.alpha)*ss.Gamma*(ss.K/ss.L)**par.alpha
+
+    ss.w_low[:] = (1-par.alpha)/2*ss.Gamma*ss.K**par.alpha*ss.L_low**(-(par.alpha+1)/2)*ss.L_high**((1-par.alpha)/2)
+    ss.w_high[:] = (1-par.alpha)/2*ss.Gamma*ss.K_lag**par.alpha*ss.L_low**((1-par.alpha)/2)*ss.L_high**(-(par.alpha+1)/2)
 
     # c. household behavior
     if do_print:
 
         print(f'guess {ss.K = :.4f}')    
         print(f'implied {ss.r = :.4f}')
-        print(f'implied {ss.w = :.4f}')
+        print(f'implied {ss.w_Low = :.4f}')
+        print(f'implied {ss.w_High = :.4f}')
 
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
@@ -84,29 +86,18 @@ def obj_ss(K_ss,model,do_print=False):
     if do_print: print(f'implied {ss.A_hh = :.4f}')
 
     # d. market clearing
-    ss.clearing_A = ss.A - ss.A_hh
-    ss.clearing_L = ss.L-ss.L_hh
-    ss.I = ss.K - (1-par.delta)*ss.K
-    ss.clearing_Y = ss.Y - ss.C_hh - ss.I
+    ss.clearing_A[:] = ss.A-ss.A_hh
+    ss.clearing_L_low[:] = ss.L_low-ss.L_hh_low
+    ss.clearing_L_high[:] = ss.L_high-ss.L_hh_high
+    ss.I = ss.K-(1-par.delta)*ss.K
+    ss.clearing_Y[:] = ss.Y-ss.C_hh-ss.I
 
     return ss.clearing_A # target to hit
     
 def find_ss(model,method='direct',do_print=False,K_min=1.0,K_max=10.0,NK=10):
-    """ find steady state using the direct or indirect method """
+    """ find steady state using the direct method """
 
     t0 = time.time()
-
-    if method == 'direct':
-        find_ss_direct(model,do_print=do_print,K_min=K_min,K_max=K_max,NK=NK)
-    elif method == 'indirect':
-        find_ss_indirect(model,do_print=do_print)
-    else:
-        raise NotImplementedError
-
-    if do_print: print(f'found steady state in {elapsed(t0)}')
-
-def find_ss_direct(model,do_print=False,K_min=1.0,K_max=10.0,NK=10):
-    """ find steady state using direct method """
 
     # a. broad search
     if do_print: print(f'### step 1: broad search ###\n')
@@ -140,46 +131,3 @@ def find_ss_direct(model,do_print=False,K_min=1.0,K_max=10.0,NK=10):
         varname='K_ss',funcname='A-A_hh'
     )
 
-def find_ss_indirect(model,do_print=False):
-    """ find steady state using indirect method """
-
-    par = model.par
-    ss = model.ss
-
-    # a. exogenous and targets
-    ss.L = 1.0
-    ss.r = par.r_ss_target
-    ss.w = par.w_ss_target
-
-    # b. stock and capital stock from household behavior
-    model.solve_hh_ss(do_print=do_print) # give us ss.a and ss.c (steady state policy functions)
-    model.simulate_hh_ss(do_print=do_print) # give us ss.D (steady state distribution)
-    if do_print: print('')
-
-    ss.K = ss.A = ss.A_hh # = np.sum(ss.a*ss.D) # calculated in model.simulate_hh_ss
-    
-    # c. back technology and depreciation rate
-    ss.Gamma = ss.w / ((1-par.alpha)*(ss.K/ss.L)**par.alpha)
-    ss.rK = par.alpha*ss.Gamma*(ss.K/ss.L)**(par.alpha-1)
-    par.delta = ss.rK - ss.r
-    ss.I = par.delta*ss.K
-
-    # d. remaining
-    ss.Y = ss.Gamma*ss.K**par.alpha*ss.L**(1-par.alpha)
-    # ss.C_hh = np.sum(ss.D*ss.c)  # calculated in model.simulate_hh_ss
-    # ss.L_hh = np.sum(ss.D*ss.l)  # calculated in model.simulate_hh_ss
-
-    ss.clearing_A = ss.A-ss.A_hh
-    ss.clearing_L = ss.L-ss.L_hh
-    ss.clearing_Y = ss.Y-ss.C_hh-ss.I
-    
-    # e. print
-    if do_print:
-
-        print(f'Implied K = {ss.K:6.3f}')
-        print(f'Implied Y = {ss.Y:6.3f}')
-        print(f'Implied Gamma = {ss.Gamma:6.3f}')
-        print(f'Implied delta = {par.delta:6.3f}')
-        print(f'Implied K/Y = {ss.K/ss.Y:6.3f}') 
-        print(f'Discrepancy in K-A_hh = {ss.K-ss.A_hh:12.8f}') # = 0 by construction
-        print(f'Discrepancy in Y-L_hh-I = {ss.Y-ss.C_hh-ss.I:12.8f}\n') # != 0 due to numerical error 
