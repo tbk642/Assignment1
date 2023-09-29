@@ -20,7 +20,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.pols_hh = ['a'] # policy functions
         self.inputs_hh = ['r','w_low','w_high','phi_low','phi_high'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
-        self.outputs_hh = ['a','c','l'] # outputs
+        self.outputs_hh = ['a','c'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE, used to run the DAG
@@ -58,7 +58,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # c. production and investment
         par.alpha = 0.36 # cobb-douglas
         par.delta = 0.10 # depreciation
-        par.Gamma = 1.0 # productivity 
+        par.Gamma = 1 # productivity 
 
         # d. calibration
         par.r_ss_target = 0.01 # target for real interest rate

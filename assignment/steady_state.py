@@ -27,8 +27,8 @@ def prepare_hh_ss(model):
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
     # d. eta
-    par.eta_low_grid[:] = np.linspace(par.beta_mean-par.beta_sigma,par.beta_mean+par.beta_sigma,par.Nbeta)# np array? UPDATE THIS LINE - THIS IS JUST FOR TESTING
-    par.eta_high_grid[:] = np.linspace(par.beta_mean-par.beta_sigma,par.beta_mean+par.beta_sigma,par.Nbeta) # AND THIS LINE
+    par.eta_low_grid[:] = np.array([0.0,0.0,0.0,1.0,1.0,1.0]) # 6 entries for 6 states
+    par.eta_high_grid[:] = np.array([1.0,1.0,1.0,0.0,0.0,0.0]) 
 
     #############################################
     # 2. transition matrix initial distribution #
@@ -58,9 +58,9 @@ def obj_ss(K_ss,model,do_print=False):
     ss = model.ss
 
     # a. production
-    ss.Gamma = par.Gamma_ss # model user choice
+    ss.Gamma = par.Gamma # model user choice
     ss.A = ss.K = K_ss
-    ss.Y = ss.Gamma*ss.K**par.alpha*ss.L_low**((1-par.alpha)/2)*ss.L_high**((1-par.alpha)/2)    
+    ss.Y = ss.Gamma*ss.K**par.alpha*ss.L_low**((1-par.alpha)/2)*ss.L_high**((1-par.alpha)/2)   
 
     # b. implied prices
     ss.rK = par.alpha*ss.Gamma*ss.K**(par.alpha-1.0)*ss.L_low**((1-par.alpha)/2)*ss.L_high**((1-par.alpha)/2)
@@ -94,7 +94,7 @@ def obj_ss(K_ss,model,do_print=False):
 
     return ss.clearing_A # target to hit
     
-def find_ss(model,method='direct',do_print=False,K_min=1.0,K_max=10.0,NK=10):
+def find_ss(model,do_print=False,K_min=1.0,K_max=10.0,NK=10):
     """ find steady state using the direct method """
 
     t0 = time.time()
