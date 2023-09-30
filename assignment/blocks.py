@@ -4,7 +4,7 @@ import numba as nb
 from GEModelTools import lag, lead
 
 @nb.njit
-def production_firm(par,ini,ss,Gamma,K,L_low,L_high,rK,w_low,w_high,Y,L,phi_low,phi_high):
+def production_firm(par,ini,ss,Gamma,K,L_low,L_high,rK,w_low,w_high,Y,phi_low,phi_high):
 
     K_lag = lag(ini.K,K)
     L_low = 2/3*phi_low

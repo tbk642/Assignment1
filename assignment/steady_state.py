@@ -78,8 +78,8 @@ def obj_ss(K_ss,model,do_print=False):
 
         print(f'guess {ss.K = :.4f}')    
         print(f'implied {ss.r = :.4f}')
-        print(f'implied {ss.w_Low = :.4f}')
-        print(f'implied {ss.w_High = :.4f}')
+        print(f'implied {ss.w_low = :.4f}')
+        print(f'implied {ss.w_high = :.4f}')
 
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
@@ -94,14 +94,14 @@ def obj_ss(K_ss,model,do_print=False):
 
     # e. market clearing
     ss.I = par.delta*ss.K
-    ss.clearing_A[:] = ss.A-ss.A_hh
-    ss.clearing_L_low[:] = ss.L_low-ss.L_hh_low
-    ss.clearing_L_high[:] = ss.L_high-ss.L_hh_high
-    ss.clearing_Y[:] = ss.Y-ss.C_hh-ss.I
+    ss.clearing_A = ss.A-ss.A_hh
+    ss.clearing_L_low = ss.L_low-ss.L_hh_low
+    ss.clearing_L_high= ss.L_high-ss.L_hh_high
+    ss.clearing_Y = ss.Y-ss.C_hh-ss.I
 
     return ss.clearing_A # target to hit
     
-def find_ss(model,do_print=False,K_min=1.0,K_max=10.0,NK=10):
+def find_ss(model,do_print=False,K_min=0.1,K_max=10.0,NK=20):
     """ find steady state using the direct method """
 
     t0 = time.time()

@@ -58,7 +58,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # c. production and labor
         par.alpha = 0.36 # cobb-douglas
         par.delta = 0.10 # depreciation
-        par.Gamma = 1 # productivity 
+        par.Gamma = 1.0 # productivity 
         par.phi_low = 1.0 # low skill labor
         par.phi_high = 2.0 # high skill labor
 
