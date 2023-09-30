@@ -48,7 +48,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.sigma = 2.0 # CRRA coefficient
         par.beta_mean = 0.975 # discount factor, mean, range is [mean-width,mean+width]
         par.beta_sigma = 0.010 # discount factor, width, range is [mean-width,mean+width]
-        par.espilon = 0.5  
+        par.nu = 0.5  
         par.epsilon = 1.0
 
         # b. income parameters

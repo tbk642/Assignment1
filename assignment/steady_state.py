@@ -28,7 +28,7 @@ def prepare_hh_ss(model):
 
     # d. eta
     par.eta_low_grid[:] = np.array([0.0,0.0,0.0,1.0,1.0,1.0]) # 6 entries for 6 states
-    par.eta_high_grid[:] = np.array([1.0,1.0,1.0,0.0,0.0,0.0]) 
+    par.eta_high_grid[:] =  np.array([1.0,1.0,1.0,0.0,0.0,0.0])
 
     #############################################
     # 2. transition matrix initial distribution #
@@ -57,6 +57,10 @@ def obj_ss(K_ss,model,do_print=False):
     par = model.par
     ss = model.ss
 
+    # eta is labor supply
+    ss.L_low = par.eta_low_grid[3:]
+    ss.L_high = par.eta_high_grid[:3]
+
     # a. production
     ss.Gamma = par.Gamma # model user choice
     ss.A = ss.K = K_ss
@@ -66,8 +70,8 @@ def obj_ss(K_ss,model,do_print=False):
     ss.rK = par.alpha*ss.Gamma*ss.K**(par.alpha-1.0)*ss.L_low**((1-par.alpha)/2)*ss.L_high**((1-par.alpha)/2)
     ss.r = ss.rK - par.delta
 
-    ss.w_low[:] = (1-par.alpha)/2*ss.Gamma*ss.K**par.alpha*ss.L_low**(-(par.alpha+1)/2)*ss.L_high**((1-par.alpha)/2)
-    ss.w_high[:] = (1-par.alpha)/2*ss.Gamma*ss.K_lag**par.alpha*ss.L_low**((1-par.alpha)/2)*ss.L_high**(-(par.alpha+1)/2)
+    ss.w_low = (1-par.alpha)/2*ss.Gamma*ss.K**par.alpha*ss.L_low**(-(par.alpha+1)/2)*ss.L_high**((1-par.alpha)/2)
+    ss.w_high = (1-par.alpha)/2*ss.Gamma*ss.K**par.alpha*ss.L_low**((1-par.alpha)/2)*ss.L_high**(-(par.alpha+1)/2)
 
     # c. household behavior
     if do_print:
@@ -83,13 +87,16 @@ def obj_ss(K_ss,model,do_print=False):
     # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
     # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
 
+    #ss.L_hh_low = np.sum(par.phi_low*ss.eta_low_grid[np.newaxis,:]*ss.D,axis=1) # is this calculated in model.solve_hh_ss?
+    #ss.L_hh_high = np.sum(par.phi_high*ss.eta_high_grid[np.newaxis,:]*ss.D,axis=1)
+
     if do_print: print(f'implied {ss.A_hh = :.4f}')
 
     # d. market clearing
+    ss.I = par.delta*ss.K
     ss.clearing_A[:] = ss.A-ss.A_hh
     ss.clearing_L_low[:] = ss.L_low-ss.L_hh_low
     ss.clearing_L_high[:] = ss.L_high-ss.L_hh_high
-    ss.I = ss.K-(1-par.delta)*ss.K
     ss.clearing_Y[:] = ss.Y-ss.C_hh-ss.I
 
     return ss.clearing_A # target to hit
@@ -130,4 +137,5 @@ def find_ss(model,do_print=False,K_min=1.0,K_max=10.0,NK=10):
         obj_ss,K_min,K_max,args=(model,),do_print=do_print,
         varname='K_ss',funcname='A-A_hh'
     )
+
 
