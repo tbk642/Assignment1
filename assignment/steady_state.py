@@ -44,7 +44,7 @@ def prepare_hh_ss(model):
     ################################################
 
     # a. raw value
-    y = ss.w_high*ss.w_low*par.z_grid
+    y = par.z_grid
     c = m = (1+ss.r)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
     v_a = (1+ss.r-par.delta)*c**(-par.sigma)
 
@@ -57,9 +57,9 @@ def obj_ss(K_ss,model,do_print=False):
     par = model.par
     ss = model.ss
 
-    # eta is labor supply
-    ss.L_low = par.eta_low_grid[3:]
-    ss.L_high = par.eta_high_grid[:3]
+    # handling of two labor markets in steady state
+    ss.L_low = 2/3*ss.phi_low # 2/3 of population in low skill market
+    ss.L_high = 1/3*ss.phi_high # 1/3 of population in high skill market
 
     # a. production
     ss.Gamma = par.Gamma # model user choice
@@ -72,7 +72,7 @@ def obj_ss(K_ss,model,do_print=False):
 
     ss.w_low = (1-par.alpha)/2*ss.Gamma*ss.K**par.alpha*ss.L_low**(-(par.alpha+1)/2)*ss.L_high**((1-par.alpha)/2)
     ss.w_high = (1-par.alpha)/2*ss.Gamma*ss.K**par.alpha*ss.L_low**((1-par.alpha)/2)*ss.L_high**(-(par.alpha+1)/2)
-
+    
     # c. household behavior
     if do_print:
 
@@ -87,12 +87,12 @@ def obj_ss(K_ss,model,do_print=False):
     # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
     # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
 
-    #ss.L_hh_low = np.sum(par.phi_low*ss.eta_low_grid[np.newaxis,:]*ss.D,axis=1) # is this calculated in model.solve_hh_ss?
-    #ss.L_hh_high = np.sum(par.phi_high*ss.eta_high_grid[np.newaxis,:]*ss.D,axis=1)
+
+
 
     if do_print: print(f'implied {ss.A_hh = :.4f}')
 
-    # d. market clearing
+    # e. market clearing
     ss.I = par.delta*ss.K
     ss.clearing_A[:] = ss.A-ss.A_hh
     ss.clearing_L_low[:] = ss.L_low-ss.L_hh_low

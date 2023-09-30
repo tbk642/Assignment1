@@ -4,18 +4,22 @@ import numba as nb
 from GEModelTools import lag, lead
 
 @nb.njit
-def production_firm(par,ini,ss,Gamma,K,L_low,L_high,rK,w_low,w_high,Y):
+def production_firm(par,ini,ss,Gamma,K,L_low,L_high,rK,w_low,w_high,Y,L,phi_low,phi_high):
 
     K_lag = lag(ini.K,K)
+    L_low = 2/3*phi_low
+    L_high = 1/3*phi_high
 
     # a. implied prices 
-    rK[:] = par.alpha*Gamma*K_lag**(par.alpha-1.0)*L_low**((1-par.alpha)/2)*L_high**((1-par.alpha)/2)
-    w_low[:] = (1-par.alpha)/2*Gamma*K_lag**par.alpha*L_low**(-(par.alpha+1)/2)*L_high**((1-par.alpha)/2)
-    w_high[:] = (1-par.alpha)/2*Gamma*K_lag**par.alpha*L_low**((1-par.alpha)/2)*L_high**(-(par.alpha+1)/2)
+    rK[:] = par.alpha*par.Gamma*K_lag**(par.alpha-1.0)*L_low**((1-par.alpha)/2)*L_high**((1-par.alpha)/2)
+    w_low[:] = (1-par.alpha)/2*par.Gamma*K_lag**par.alpha*L_low**(-(par.alpha+1)/2)*L_high**((1-par.alpha)/2)
+    w_high[:] = (1-par.alpha)/2*par.Gamma*K_lag**par.alpha*L_low**((1-par.alpha)/2)*L_high**(-(par.alpha+1)/2)
 
     
-    # b. production and investment
-    Y[:] = Gamma*K_lag**(par.alpha)*L_low**((1-par.alpha)/2)*L_high**((1-par.alpha)/2)
+    # b. production and labor
+    Y[:] = par.Gamma*K_lag**(par.alpha)*L_low**((1-par.alpha)/2)*L_high**((1-par.alpha)/2)
+    L_low[:] = L_low
+    L_high[:] = L_high
 
 @nb.njit
 def mutual_fund(par,ini,ss,K,rK,A,r):

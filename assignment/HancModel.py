@@ -55,25 +55,23 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.rho_z = 0.95 # AR(1) parameter
         par.sigma_psi = 0.30*(1.0-par.rho_z**2.0)**0.5 # std. of persistent shock
 
-        # c. production and investment
+        # c. production and labor
         par.alpha = 0.36 # cobb-douglas
         par.delta = 0.10 # depreciation
         par.Gamma = 1 # productivity 
+        par.phi_low = 1.0 # low skill labor
+        par.phi_high = 2.0 # high skill labor
 
-        # d. calibration
-        par.r_ss_target = 0.01 # target for real interest rate
-        par.w_ss_target = 1.0 # target for real wage
-
-        # f. grids         
+        # d. grids         
         par.a_max = 500.0 # maximum point in grid for a
         par.Na = 300 # number of grid points
 
-        # g. shocks
+        # e. shocks
         par.jump_Gamma = -0.10 # initial jump
         par.rho_Gamma = 0.90 # AR(1) coefficient
         par.std_Gamma = 0.01 # std. of innovation
 
-        # h. misc.
+        # f. misc.
         par.T = 500 # length of transition path        
         par.simT = 2_000 # length of simulation 
         
