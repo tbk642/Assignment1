@@ -90,15 +90,7 @@ def obj_ss(K_ss,model,do_print=False):
 
     # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
     # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
-
-    # calculating ss.L_hh_low and ss.L_hh_high
-    for i_z in range (par.Nz):
-        ss.L_hh_low = np.sum(par.z_grid[i_z]*par.phi_low*par.eta_low_grid[-1]*ss.D) # test update this.
-        ss.L_hh_high = np.sum(par.z_grid[i_z]*par.phi_high*par.eta_high_grid[0]*ss.D) # test update this
-
-
-
-
+    
     if do_print: print(f'implied {ss.A_hh = :.4f}')
 
     # e. market clearing
