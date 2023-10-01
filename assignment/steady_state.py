@@ -90,14 +90,14 @@ def obj_ss(K_ss,model,do_print=False):
 
     # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
     # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
-    
+
     if do_print: print(f'implied {ss.A_hh = :.4f}')
 
     # e. market clearing
     ss.I = par.delta*ss.K
     ss.clearing_A = ss.A-ss.A_hh
-    ss.clearing_L_low = ss.L_low-ss.L_hh_low
-    ss.clearing_L_high= ss.L_high-ss.L_hh_high
+    ss.clearing_L_low = ss.L_low-ss.L_LOW_hh
+    ss.clearing_L_high= ss.L_high-ss.L_LOW_hh
     ss.clearing_Y = ss.Y-ss.C_hh-ss.I
 
     return ss.clearing_A # target to hit

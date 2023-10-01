@@ -32,11 +32,11 @@ def mutual_fund(par,ini,ss,K,rK,A,r):
 
 
 @nb.njit
-def market_clearing(par,ini,ss,A,A_hh,L_low,L_high,L_hh_high,L_hh_low,Y,C_hh,K,I,clearing_A,clearing_L_low,clearing_L_high,clearing_Y):
+def market_clearing(par,ini,ss,A,A_hh,L_low,L_high,L_HIGH_hh,L_LOW_hh,Y,C_hh,K,I,clearing_A,clearing_L_low,clearing_L_high,clearing_Y):
 
     clearing_A[:] = A-A_hh
-    clearing_L_low[:] = L_low-L_hh_low
-    clearing_L_high[:] = L_high-L_hh_high
+    clearing_L_low[:] = L_low-L_HIGH_hh
+    clearing_L_high[:] = L_high-L_HIGH_hh
     I = K-(1-par.delta)*lag(ini.K,K)
     clearing_Y[:] = Y-C_hh-I
 
