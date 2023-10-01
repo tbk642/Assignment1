@@ -18,7 +18,11 @@ def prepare_hh_ss(model):
     ############
     
     # a. beta
-    par.beta_grid[:] = np.linspace(par.beta_mean-par.beta_sigma,par.beta_mean+par.beta_sigma,par.Nbeta)
+    beta_low = par.beta_mean - par.beta_sigma
+    beta_mid = par.beta_mean
+    beta_high = par.beta_mean + par.beta_sigma
+
+    par.beta_grid[:] = np.array([beta_low,beta_mid,beta_high,beta_low,beta_mid,beta_high]) # 6 entries for 6 states
 
     # b. a
     par.a_grid[:] = equilogspace(0.0,par.a_max,par.Na)
@@ -86,6 +90,11 @@ def obj_ss(K_ss,model,do_print=False):
 
     # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
     # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
+
+    # calculating ss.L_hh_low and ss.L_hh_high
+    for i_z in range (par.Nz):
+        ss.L_hh_low = np.sum(par.z_grid[i_z]*par.phi_low*par.eta_low_grid[-1]*ss.D) # test update this.
+        ss.L_hh_high = np.sum(par.z_grid[i_z]*par.phi_high*par.eta_high_grid[0]*ss.D) # test update this
 
 
 
