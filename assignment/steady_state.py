@@ -97,7 +97,7 @@ def obj_ss(K_ss,model,do_print=False):
     ss.I = par.delta*ss.K
     ss.clearing_A = ss.A-ss.A_hh
     ss.clearing_L_low = ss.L_low-ss.L_LOW_hh
-    ss.clearing_L_high= ss.L_high-ss.L_LOW_hh
+    ss.clearing_L_high= ss.L_high-ss.L_HIGH_hh
     ss.clearing_Y = ss.Y-ss.C_hh-ss.I
 
     return ss.clearing_A # target to hit

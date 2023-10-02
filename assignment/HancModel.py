@@ -26,7 +26,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # c. GE, used to run the DAG
         self.shocks = ['Gamma','phi_low','phi_high'] # exogenous shocks, values we can make shocks to
         self.unknowns = ['K'] # endogenous unknowns
-        self.targets = ['clearing_A'] # targets = 0, equations solved numericcaly. I get an error when doing IRF when adding 'clearing_L_low' and 'clearing_L_high' to targets
+        self.targets = ['clearing_A','clearing_L_low','clearing_L_high'] # targets = 0, equations solved numericcaly. I get an error when doing IRF when adding 'clearing_L_low' and 'clearing_L_high' to targets
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
             'blocks.mutual_fund',
