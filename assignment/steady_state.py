@@ -31,8 +31,8 @@ def prepare_hh_ss(model):
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
     # d. eta
-    par.eta_low_grid[:] = np.array([0.0,0.0,0.0,1.0,1.0,1.0]) # 6 entries for 6 states
-    par.eta_high_grid[:] =  np.array([1.0,1.0,1.0,0.0,0.0,0.0])
+    par.eta_low_grid[:] = np.array([1.0,1.0,1.0,0.0,0.0,0.0]) # 6 entries for 6 states
+    par.eta_high_grid[:] =  np.array([0.0,0.0,0.0,1.0,1.0,1.0])
 
     #############################################
     # 2. transition matrix initial distribution #

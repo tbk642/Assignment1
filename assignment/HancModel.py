@@ -18,7 +18,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','w_low','w_high','phi_low','phi_high'] # direct inputs
+        self.inputs_hh = ['rK','w_low','w_high','phi_low','phi_high'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
         self.outputs_hh = ['a','c','l_low','l_high'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
@@ -26,7 +26,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # c. GE, used to run the DAG
         self.shocks = ['Gamma','phi_low','phi_high'] # exogenous shocks, values we can make shocks to
         self.unknowns = ['K'] # endogenous unknowns
-        self.targets = ['clearing_A'] # targets = 0, equations solved numericcaly. I get an error when doing IRF when adding 'clearing_L_low' and 'clearing_L_high' to targets
+        self.targets = ['clearing_A','clearing_L_low','clearing_L_high'] # targets = 0, equations solved numerically.
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
             'blocks.mutual_fund',

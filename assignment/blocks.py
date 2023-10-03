@@ -18,8 +18,7 @@ def production_firm(par,ini,ss,Gamma,K,rK,w_low,w_high,Y,phi_low,phi_high):
     
     # b. production and labor
     Y[:] = par.Gamma*K_lag**(par.alpha)*L_low**((1-par.alpha)/2)*L_high**((1-par.alpha)/2)
-    L_low[:] = L_low
-    L_high[:] = L_high
+
 
 @nb.njit
 def mutual_fund(par,ini,ss,K,rK,A,r):
