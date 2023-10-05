@@ -18,7 +18,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['rK','w_low','w_high','phi_low','phi_high'] # direct inputs
+        self.inputs_hh = ['r','w_low','w_high','phi_low','phi_high'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
         self.outputs_hh = ['a','c','l_low','l_high'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
