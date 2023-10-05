@@ -25,8 +25,8 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # c. GE, used to run the DAG
         self.shocks = ['Gamma','phi_low','phi_high'] # exogenous shocks, values we can make shocks to
-        self.unknowns = ['K'] # endogenous unknowns
-        self.targets = ['clearing_A','clearing_L_low','clearing_L_high'] # targets = 0, equations solved numerically.
+        self.unknowns = ['K','L_low','L_high'] # endogenous unknowns
+        self.targets = ['clearing_A','clearing_L_low','clearing_L_high'] # targets = 0
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
             'blocks.mutual_fund',
