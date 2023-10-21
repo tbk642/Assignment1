@@ -20,7 +20,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.pols_hh = ['a'] # policy functions
         self.inputs_hh = ['r','w_low','w_high','phi_low','phi_high'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
-        self.outputs_hh = ['a','c','l_low','l_high'] # outputs
+        self.outputs_hh = ['a','c','l_low','l_high','u'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE, used to run the DAG
@@ -96,12 +96,11 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # i. beta grid
         par.Nbeta = par.Nfix
-        par.beta_grid = np.zeros(par.Nbeta)
+        par.beta_grid = np.zeros(par.Nfix)
 
         # ii. eta grid
-        par.Neta = par.Nfix
-        par.eta_low_grid = np.zeros(par.Neta)
-        par.eta_high_grid = np.zeros(par.Neta)
+        par.eta_low_grid = np.zeros(par.Nfix)
+        par.eta_high_grid = np.zeros(par.Nfix)
         
         # b. solution
         self.allocate_GE() # should always be called here

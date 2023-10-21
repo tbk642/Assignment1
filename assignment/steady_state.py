@@ -18,11 +18,13 @@ def prepare_hh_ss(model):
     ############
     
     # a. beta
+    par.Nbeta = 3
     beta_low = par.beta_mean - par.beta_sigma
     beta_mid = par.beta_mean
     beta_high = par.beta_mean + par.beta_sigma
+    beta_grid = np.array([beta_low,beta_mid,beta_high])
 
-    par.beta_grid[:] = np.array([beta_low,beta_mid,beta_high,beta_low,beta_mid,beta_high]) # 6 entries for 6 states
+    par.beta_grid[:] = np.tile(beta_grid,2)
 
     # b. a
     par.a_grid[:] = equilogspace(0.0,par.a_max,par.Na)
@@ -31,8 +33,8 @@ def prepare_hh_ss(model):
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
     # d. eta
-    par.eta_low_grid[:] = np.array([1.0,1.0,1.0,0.0,0.0,0.0]) # 6 entries for 6 states
-    par.eta_high_grid[:] =  np.array([0.0,0.0,0.0,1.0,1.0,1.0])
+    par.eta_low_grid[:] = np.hstack((np.ones(par.Nbeta),np.zeros(par.Nbeta)))
+    par.eta_high_grid[:] = np.hstack((np.zeros(par.Nbeta),np.ones(par.Nbeta)))
 
     #############################################
     # 2. transition matrix initial distribution #
@@ -62,6 +64,9 @@ def obj_ss(K_ss,model,do_print=False):
 
     par = model.par
     ss = model.ss
+
+    ss.phi_low = par.phi_low
+    ss.phi_high = par.phi_high
 
     # handling of two labor markets in steady state
     ss.L_low = 2/3*ss.phi_low # 2/3 of population in low skill market
@@ -104,7 +109,7 @@ def obj_ss(K_ss,model,do_print=False):
 
     return ss.clearing_A # target to hit
     
-def find_ss(model,do_print=False,K_min=0.1,K_max=10.0,NK=20):
+def find_ss(model,do_print=False,K_min=1,K_max=10.0,NK=10):
     """ find steady state using the direct method """
 
     t0 = time.time()
