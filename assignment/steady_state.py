@@ -42,7 +42,7 @@ def prepare_hh_ss(model):
     
     for i_fix in range(par.Nfix):
         ss.z_trans[i_fix,:,:] = z_trans
-        ss.Dbeg[:3,:,0] = z_ergodic*2/3*1/3 # ergodic at a_lag = 0.0
+        ss.Dbeg[:3,:,0] = z_ergodic*2/3*1/3 # ergodic at a_lag = 0.0 # fixed states, exogenous stochastic states, endogenous states. First fraction is share of distribution for low prod. types. last fraction is for the three betas
         ss.Dbeg[:3,:,1:] = 0.0 # none with a_lag > 0.0
         ss.Dbeg[3:,:,0] = z_ergodic*1/3*1/3 # ergodic at a_lag = 0.0
         ss.Dbeg[3:,:,1:] = 0.0 # none with a_lag > 0.0
